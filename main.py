@@ -64,12 +64,44 @@ def createfile():
 
 # Save future predictions to a text file
     future_predictions_df.to_csv("future_predictions.txt", sep="\t", index=False)
+def check_buy_signal(predictions_df):
+    """
+    Check if it is a good moment to buy BTC based on the predictions.
+
+    Arguments:
+    predictions_df -- DataFrame with actual and predicted BTC prices.
+
+    Returns:
+    buy_signal -- Boolean value indicating whether it is a good moment to buy BTC.
+    """
+    last_actual_price = predictions_df.iloc[-1]["Actual"]
+    last_predicted_price = predictions_df.iloc[-1]["Predicted"]
+
+    # Define a threshold for considering it a good moment to buy BTC
+    threshold = 0.0  # Modify this threshold according to your preference
+
+    if last_predicted_price > last_actual_price + threshold:
+        buy_signal = True
+    else:
+        buy_signal = False
+
+    return buy_signal
+
+
+# Call the check_buy_signal function
+
+
+
 
 choise = int(input("1 - create file with predictions\n2 - give opinion about price\n3 - close program\nWrite your number:"))
 if choise == 1:
     createfile()
 elif choise==2:
-    print("soon")
+    buy_signal = check_buy_signal(predictions_df)
+    if buy_signal:
+        print("It is a good moment to buy BTC.")
+    else:
+        print("It is not a good moment to buy BTC.")
 elif choise == 3:
     sys.exit()
 
