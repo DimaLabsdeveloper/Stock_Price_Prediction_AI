@@ -1,3 +1,5 @@
+import sys
+
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 import yfinance as yf
@@ -46,20 +48,28 @@ for i, row in data.iterrows():
     predictions_df.loc[i, "Predicted"] = prediction[0]
 
 # Make future predictions
-future_predictions_df = pd.DataFrame(columns=["Date", "Close", "Target"])
-end_time_future = end_time + timedelta(hours=1)
-for j in range(24):  # Predict next 24 hours
-    future_data = pd.concat([data, future_predictions_df])
-    X_future = future_data[["Close"]]
-    model.fit(X_future, future_data["Target"])
-    next_hour_future = pd.DataFrame([[future_data.iloc[-1]["Close"]]], columns=["Close"])
-    future_prediction = model.predict(next_hour_future)
-    future_predictions_df.loc[end_time_future, "Date"] = end_time_future
-    future_predictions_df.loc[end_time_future, "Close"] = future_data.iloc[-1]["Close"]
-    future_predictions_df.loc[end_time_future, "Target"] = future_prediction[0]
-    end_time_future += timedelta(hours=1)
+def createfile():
+    future_predictions_df = pd.DataFrame(columns=["Date", "Close", "Target"])
+    end_time_future = end_time + timedelta(hours=1)
+    for j in range(24):  # Predict next 24 hours
+        future_data = pd.concat([data, future_predictions_df])
+        X_future = future_data[["Close"]]
+        model.fit(X_future, future_data["Target"])
+        next_hour_future = pd.DataFrame([[future_data.iloc[-1]["Close"]]], columns=["Close"])
+        future_prediction = model.predict(next_hour_future)
+        future_predictions_df.loc[end_time_future, "Date"] = end_time_future
+        future_predictions_df.loc[end_time_future, "Close"] = future_data.iloc[-1]["Close"]
+        future_predictions_df.loc[end_time_future, "Target"] = future_prediction[0]
+        end_time_future += timedelta(hours=1)
 
 # Save future predictions to a text file
-future_predictions_df.to_csv("future_predictions.txt", sep="\t", index=False)
+    future_predictions_df.to_csv("future_predictions.txt", sep="\t", index=False)
 
+choise = int(input("1 - create file with predictions\n2 - give opinion about price\n3 - close program\nWrite your number:"))
+if choise == 1:
+    createfile()
+elif choise==2:
+    print("soon")
+elif choise == 3:
+    sys.exit()
 
